@@ -1,0 +1,394 @@
+schema {
+  query: Query
+  mutation: Mutation
+}
+
+type Answer {
+  _id: String!
+  correctValue: String!
+  creatorId: Int!
+  type: AnswerType!
+}
+
+type AnswerEmbeded {
+  correctValue: String!
+  type: AnswerType!
+}
+
+input AnswerEmbededInput {
+  correctValue: String!
+  type: AnswerType!
+}
+
+type AnswerGroup {
+  _id: String!
+  """values shown to the user"""
+  availableValues: [String!]!
+  """correct values"""
+  correctValues: [String!]
+  creatorId: Int!
+  """type: RadioBox, checkBox... """
+  type: AnswerGroupType!
+}
+
+type AnswerGroupEmbeded {
+  """values shown to the user"""
+  availableValues: [String!]!
+  """correct values"""
+  correctValues: [String!]
+  """type: RadioBox, checkBox... """
+  type: AnswerGroupType!
+}
+
+input AnswerGroupEmbededInput {
+  """values shown to the user"""
+  availableValues: [String!]!
+  """correct values"""
+  correctValues: [String!]
+  """type: RadioBox, checkBox... """
+  type: AnswerGroupType!
+}
+
+input AnswerGroupInput {
+  """values shown to the user"""
+  availableValues: [String!]!
+  """correct values"""
+  correctValues: [String!]
+  creatorId: Int!
+  """type: RadioBox, checkBox... """
+  type: AnswerGroupType!
+}
+
+enum AnswerGroupType {
+  CHECKBOX
+  RADIO
+}
+
+enum AnswerType {
+  CODE
+  NUMERIC
+  RANGE
+  TEXT
+}
+
+union AnswerableUnion = AnswerEmbeded | AnswerGroupEmbeded
+
+union BlockUnion = Note | QuestionEmbeded | QuestionGroupEmbeded
+
+"""Domain/Field company works in"""
+type Category {
+  """Id of the category"""
+  _id: String!
+  """color used to represent this domain"""
+  color: HexColorCode!
+  """name of the domain"""
+  name: String!
+}
+
+input CategoryInput {
+  """Id of the category"""
+  _id: String!
+  """color used to represent this domain"""
+  color: HexColorCode!
+  """name of the domain"""
+  name: String!
+}
+
+input CreateAnswerInput {
+  correctValue: String!
+  creatorId: Int!
+  type: AnswerType!
+}
+
+input CreateCategoryInput {
+  """color used to represent this domain"""
+  color: HexColorCode!
+  """name of the domain"""
+  name: String!
+}
+
+input CreateQuestionAnswerGroupInput {
+  answerGroup: AnswerGroupEmbededInput
+  categories: [CategoryInput]
+  creatorId: Int!
+  hint: String
+  isPrivate: Boolean!
+  time: QuestionTimeInput
+  value: String!
+}
+
+input CreateQuestionGroupInput {
+  categories: [CreateCategoryInput]
+  creatorId: Int!
+  description: String
+  name: String!
+  questions: [CreateQuestionInput]
+}
+
+input CreateQuestionInput {
+  answer: AnswerEmbededInput
+  categories: [CategoryInput]
+  creatorId: Int!
+  hint: String
+  isPrivate: Boolean!
+  time: QuestionTimeInput
+  value: String!
+}
+
+input CreateSurveyInput {
+  canBePaused: Boolean!
+  description: String
+  isPrivate: Boolean!
+  name: String!
+  notes: [NoteInput!]
+  questionGroups: [QuestionGroupEmbededInput!]
+  questions: [QuestionEmbededInput!]
+  time: Time
+  userId: Int!
+  version: Int
+}
+
+input FilteringInput {
+  """Json string of filters to apply"""
+  filter_by: JSON!
+}
+
+"""
+A field whose value is a hex color code: https://en.wikipedia.org/wiki/Web_colors.
+"""
+scalar HexColorCode
+
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON
+
+type Mutation {
+  createAnswer(createAnswerInput: CreateAnswerInput!): Answer!
+  createAnswerGroup(answerGroupInput: AnswerGroupInput!): AnswerGroup!
+  createCategory(createCategoryInput: CreateCategoryInput!): Category!
+  createQuestion(createQuestionInput: CreateQuestionInput!): Question!
+  createQuestionAnswerGroup(createQuestionAnswerGroupInput: CreateQuestionAnswerGroupInput!): Question!
+  createQuestionGroup(createQuestionGroupInput: CreateQuestionGroupInput!): QuestionGroup!
+  createSurvey(createSurveyInput: CreateSurveyInput!): Survey!
+  downVoteQuestions(ids: [String!]!): [Question!]!
+  removeAnswer(id: String!): Answer!
+  removeAnswerGroup(id: String!): AnswerGroup!
+  removeCategory(id: String!): Category!
+  removeQuestion(id: String!): Question!
+  removeQuestionGroup(id: String!): QuestionGroup!
+  removeSurvey(id: String!): Survey!
+  upVoteQuestions(ids: [String!]!): [Question!]!
+  updateAnswer(updateAnswerInput: UpdateAnswerInput!): Answer!
+  updateAnswerGroup(UpdateAnswerGroupInput: UpdateAnswerGroupInput!): AnswerGroup!
+  updateCategory(updateCategoryInput: UpdateCategoryInput!): Category!
+  updateQuestion(updateQuestionInput: UpdateQuestionInput!): Question!
+  updateQuestionGroup(updateQuestionGroupInput: UpdateQuestionGroupInput!): QuestionGroup!
+  updateSurvey(updateSurveyInput: UpdateSurveyInput!): Survey!
+}
+
+type Note {
+  order: Int!
+  type: NoteType!
+  value: String!
+}
+
+input NoteInput {
+  order: Int!
+  type: NoteType!
+  value: String!
+}
+
+enum NoteType {
+  ALERT
+  INFO
+  WARNING
+}
+
+input PaginationInput {
+  """number of element per page."""
+  nbElement: Int!
+  """Page of number."""
+  page: Int!
+}
+
+type Query {
+  answer(id: String!): Answer!
+  answerGroup(id: String!): AnswerGroup!
+  answerGroups(filter: FilteringInput, pagination: PaginationInput, sort: SortingInput): [AnswerGroup!]!
+  answers(filter: FilteringInput, pagination: PaginationInput, sort: SortingInput): [Answer!]!
+  categories(filter: FilteringInput, pagination: PaginationInput, sort: SortingInput): [Category!]!
+  category(id: String!): Category!
+  question(id: String!): Question!
+  questionGroup(id: String!): QuestionGroup!
+  questionGroups(filter: FilteringInput, pagination: PaginationInput, sort: SortingInput): [QuestionGroup!]!
+  questions(filter: FilteringInput, pagination: PaginationInput, sort: SortingInput): [Question!]!
+  survey(id: String!): Survey!
+  surveys(filter: FilteringInput, pagination: PaginationInput, sort: SortingInput): [Survey!]!
+}
+
+type Question {
+  _id: String!
+  answer: [AnswerableUnion!]!
+  categories: [Category]
+  creatorId: Int!
+  grantedTimeUnit: QuestionTime
+  grantedTimeValue: String
+  hint: String
+  isPrivate: Boolean!
+  popularity: Int!
+  value: String!
+}
+
+type QuestionEmbeded {
+  grantedTimeUnit: QuestionTime
+  grantedTimeValue: String
+  hint: String
+  order: Int!
+  popularity: Int!
+  value: String!
+}
+
+input QuestionEmbededInput {
+  grantedTimeUnit: QuestionTime
+  grantedTimeValue: String
+  hint: String
+  order: Int!
+  popularity: Int! = 0
+  value: String!
+}
+
+type QuestionGroup {
+  _id: String!
+  categories: [Category]
+  creatorId: Int!
+  description: String
+  name: String!
+  questions: [QuestionEmbeded!]
+}
+
+type QuestionGroupEmbeded {
+  description: String
+  name: String!
+  order: Int!
+  questions: [QuestionEmbeded!]!
+}
+
+input QuestionGroupEmbededInput {
+  description: String
+  name: String!
+  order: Int!
+  questions: [QuestionEmbededInput!]!
+}
+
+input QuestionGroupInput {
+  _id: String!
+  categories: [CategoryInput]
+  creatorId: Int!
+  description: String
+  name: String!
+  questions: [QuestionEmbededInput!]
+}
+
+enum QuestionTime {
+  MIN
+  SEC
+}
+
+input QuestionTimeInput {
+  grantedTimeUnit: QuestionTime!
+  grantedTimeValue: String!
+}
+
+input SortingInput {
+  """Json string of field to sort by. value must be ASC or DESC"""
+  sort_by: JSON!
+}
+
+type Survey {
+  _id: String!
+  canBePaused: Boolean!
+  content: [BlockUnion!]
+  description: String
+  isPrivate: Boolean!
+  name: String!
+  totalTime: Int
+  totalTimeUnit: TimeUnit
+  userId: Int!
+  version: Int
+}
+
+input Time {
+  unit: TimeUnit!
+  value: Int!
+}
+
+enum TimeUnit {
+  DAYS
+  HOURS
+  MIN
+  MONTHS
+  SEC
+  WEEKS
+}
+
+input UpdateAnswerGroupInput {
+  _id: String!
+  """values shown to the user"""
+  availableValues: [String!]
+  """correct values"""
+  correctValues: [String!]
+  creatorId: Int
+  """type: RadioBox, checkBox... """
+  type: AnswerGroupType
+}
+
+input UpdateAnswerInput {
+  _id: String!
+  correctValue: String
+  creatorId: Int
+  type: AnswerType
+}
+
+input UpdateCategoryInput {
+  """Id of the company"""
+  _id: String!
+  """color used to represent this domain"""
+  color: HexColorCode
+  """name of the domain"""
+  name: String
+}
+
+input UpdateQuestionGroupInput {
+  _id: String!
+  categories: [CreateCategoryInput!]
+  creatorId: Int
+  description: String
+  name: String
+  questions: [CreateQuestionInput!]
+}
+
+input UpdateQuestionInput {
+  _id: String!
+  answer: AnswerEmbededInput
+  categories: [CategoryInput!]
+  creatorId: Int
+  hint: String
+  isPrivate: Boolean
+  time: QuestionTimeInput
+  value: String
+}
+
+input UpdateSurveyInput {
+  _id: String!
+  canBePaused: Boolean
+  description: String
+  isPrivate: Boolean
+  name: String
+  notes: [NoteInput!]
+  questionGroups: [QuestionGroupEmbededInput!]
+  questions: [QuestionEmbededInput!]
+  time: Time
+  userId: Int
+  version: Int
+}

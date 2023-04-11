@@ -1,0 +1,17 @@
+{
+  "definitions": {
+    "user": {
+      "type": "object",
+      "title": "user",
+      "description": "Return a user",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "lastname": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
